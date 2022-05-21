@@ -1,17 +1,20 @@
+
+set(CMAKE_C_COMPILER "C:/Espressif/tools/xtensa-esp32-elf/esp-2021r2-patch2-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc.exe")
+set(CMAKE_CXX_COMPILER "C:/Espressif/tools/xtensa-esp32-elf/esp-2021r2-patch2-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-g++.exe")
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+
 cmake_minimum_required(VERSION 3.0.0)
 project(vorbis VERSION 0.1.0)
 
-include(CTest)
-enable_testing()
+#include(CTest)
+#enable_testing()
 
-add_compile_definitions(INCLUDE_STDINT_H=1)
 
 add_subdirectory(libogg)
 
 include_directories(include)
 include_directories(lib)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/libogg/include)
-
 
 set(SRC lib)
 
@@ -82,6 +85,6 @@ target_link_libraries(vorbis PUBLIC ogg)
 target_link_libraries(vorbisenc PUBLIC ogg)
 target_link_libraries(vorbisfile PUBLIC ogg)
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+##set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+#set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+#include(CPack)
