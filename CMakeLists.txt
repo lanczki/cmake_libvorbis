@@ -2,6 +2,7 @@
 set(CMAKE_C_COMPILER "C:/Espressif/tools/xtensa-esp32-elf/esp-2021r2-patch2-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc.exe")
 set(CMAKE_CXX_COMPILER "C:/Espressif/tools/xtensa-esp32-elf/esp-2021r2-patch2-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-g++.exe")
 set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+add_compile_options(-mlongcalls)
 
 cmake_minimum_required(VERSION 3.0.0)
 project(vorbis VERSION 0.1.0)
@@ -77,13 +78,34 @@ set(VORBISENC_SOURCES
     ${SRC}/vorbisenc.c
 )
 
-add_library(vorbis ${VORBIS_HEADERS} ${VORBIS_SOURCES})
+add_library(vorbis_pre ${VORBIS_HEADERS} ${VORBIS_SOURCES})
 add_library(vorbisenc ${VORBISENC_SOURCES})
 add_library(vorbisfile ${VORBISFILE_SOURCES})
 
-target_link_libraries(vorbis PUBLIC ogg)
+target_link_libraries(vorbis_pre PUBLIC ogg)
 target_link_libraries(vorbisenc PUBLIC ogg)
 target_link_libraries(vorbisfile PUBLIC ogg)
+
+
+set(C_LIB ${CMAKE_BINARY_DIR}/libvorbis.a)
+
+message(ERROR "$<TARGET_FILE:ogg>")
+
+add_custom_target(combined
+        COMMAND ar -x $<TARGET_FILE:vorbis_pre>
+        COMMAND ar -x $<TARGET_FILE:ogg>
+        COMMAND ar -qcs ${C_LIB} *.o
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        DEPENDS vorbis_pre ogg
+        )
+
+add_library(vorbis STATIC IMPORTED GLOBAL)
+add_dependencies(vorbis combined)
+
+#add_library(asd INTERFACE)
+#target_link_libraries(asd INTERFACE vorbis_pre ogg)
+
+
 
 ##set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 #set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
